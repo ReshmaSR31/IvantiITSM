@@ -13,6 +13,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
+    environment: Development 
     steps:
       - name: 'Checkout GitHub Actions'
         uses: actions/checkout@v2
