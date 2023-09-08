@@ -26,7 +26,7 @@ jobs:
         shell: pwsh
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          ditnet build "./WebFunctions/WebFunctions.csproj" --configuration Release --output ./output
+          dotnet build "./WebFunctions/WebFunctions.csproj" --configuration Release --output ./output
           popd
 
       - name: 'Run Azure Functions Action'
