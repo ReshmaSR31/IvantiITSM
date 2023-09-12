@@ -11,9 +11,12 @@ env:
   DOTNET_VERSION: '6.0.x'
 
 jobs:
-  build-and-deploy:
+  Build:
     runs-on: windows-latest
-    environment: Development 
+    
+  Development: 
+    runs-on: windows-latest
+    environment: Development
     steps:
       - name: 'Checkout GitHub Actions'
         uses: actions/checkout@v2
