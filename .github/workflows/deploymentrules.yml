@@ -13,7 +13,10 @@ env:
 jobs:
   Build:
     runs-on: windows-latest
-    
+    steps:
+    - name: 'no-op'
+      run: echo "::no-op"
+      
   Development: 
     runs-on: windows-latest
     environment: Development
