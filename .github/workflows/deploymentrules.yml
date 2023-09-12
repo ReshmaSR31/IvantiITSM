@@ -1,4 +1,4 @@
-name: build and deploy Dotnet core app
+name: Function App Deployment
 
 on:
   push:
@@ -14,13 +14,6 @@ jobs:
   Build:
     runs-on: windows-latest
     steps:
-    - name: 'no-op'
-      run: echo "::no-op"
-      
-  Development: 
-    runs-on: windows-latest
-    environment: Development
-    steps:
       - name: 'Checkout GitHub Actions'
         uses: actions/checkout@v2
 
@@ -35,6 +28,18 @@ jobs:
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build "./WebFunctions/WebFunctions.csproj" --configuration Release --output ./output
           popd
+      
+  Development: 
+    runs-on: windows-latest
+    environment: Development
+    steps:
+      - name: 'Checkout GitHub Actions'
+        uses: actions/checkout@v2
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
