@@ -19,16 +19,17 @@ namespace WebFunctions
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
             if(Request.Headers["X-Hub-Signature-256"] != null)
             {
                 var isSignValid = VerifySignature(secretKey, requestBody, Request.Headers["X-Hub-Signature-256"]);
+                 log.LogInformation("Signature verified successfully");
                 return new OkObjectResult(isSignValid);
             }
             else
             {
+                  log.LogInformation("Signature verification failed");
                 return new OkObjectResult("Header is null");
             }
                                               
