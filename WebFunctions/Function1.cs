@@ -12,24 +12,38 @@ namespace WebFunctions
 {
     public static class Function1
     {
+        public const string secretKey = "6FE5E4FD341E4BE581C6C700BFE771BC";
+        
         [FunctionName("Function1")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+            if(Request.Headers["X-Hub-Signature-256"] != null)
+            {
+                var isSignValid = VerifySignature(secretKey, requestBody, Request.Headers["X-Hub-Signature-256"]);
+                return new OkObjectResult(isSignValid);
+            }
+            else
+            {
+                return new OkObjectResult("Header is null");
+            }
+                                              
+        }
 
-            return new OkObjectResult(responseMessage);
+        static bool VerifySignature(string secret, string requestBody, string xHubSignature)
+        {
+            using (var hmac = new HMACSHA256(Encoding.ASCII.GetBytes(secret)))
+            {
+                byte[] signatureBytes = hmac.ComputeHash(Encoding.ASCII.GetBytes(requestBody));
+                string calculatedSignature = "sha256=" + BitConverter.ToString(signatureBytes).Replace("-", "").ToLower();
+
+                // Compare the calculated signature with the provided X-Hub-Signature
+                return string.Equals(calculatedSignature, xHubSignature, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 }
