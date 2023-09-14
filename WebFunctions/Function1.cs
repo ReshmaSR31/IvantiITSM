@@ -23,9 +23,9 @@ namespace WebFunctions
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-            if(Request.Headers["X-Hub-Signature-256"] != null)
+            if(string.IsNullOrEmpty(req.Headers["X-Hub-Signature-256"]))
             {
-                var isSignValid = VerifySignature(secretKey, requestBody, Request.Headers["X-Hub-Signature-256"]);
+                var isSignValid = VerifySignature(secretKey, requestBody, req.Headers["X-Hub-Signature-256"]);
                  log.LogInformation("Signature verified successfully");
                 return new OkObjectResult(isSignValid);
             }
